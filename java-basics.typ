@@ -109,6 +109,36 @@ wtoj-plataforma-contenidos-CreadorSW-1
 - `mvnw` y `mvnw.cmd`: Scripts que permiten usar Maven sin instalarlo globalmente. El primero es para Linux/Mac, el segundo para Windows.
 - `pom.xml`: Archivo de configuración de Maven que define las dependencias y cómo compilar el proyecto.
 
+== Gestión de Dependencias y Maven
+
+Java utiliza herramientas como *Maven* para gestionar las librerías externas. Los editores modernos (como Zed) detectan automáticamente la configuración del proyecto:
+
+- *Detección*: El servidor de lenguaje (JDT.LS) busca el archivo `pom.xml`. Si existe, configura el proyecto siguiendo el estándar de Maven.
+- *Maven Wrapper (`mvnw`)*: Permite ejecutar Maven sin tenerlo instalado globalmente, asegurando que todos los desarrolladores usen la misma versión.
+- *Repositorio Local*: Las dependencias se descargan una sola vez a la carpeta `~/.m2/repository`.
+  - La primera compilación es lenta porque descarga todo de internet.
+  - Las siguientes son rápidas porque Maven reutiliza lo que ya tiene en disco.
+  - Esto permite trabajar offline una vez que las dependencias iniciales fueron obtenidas.
+
+#v(0.5em)
+
+= Ignorando archivos de compilación (.gitignore)
+
+Cuando subís el proyecto a Git, *no* deben incluirse los archivos generados automáticamente:
+
+- `target/`: Directorio donde Maven guarda los `.class` compilados y los resultados de los tests. Puede ocupar varios megabytes.
+- `*.class`: Archivos de bytecode Java, por si compilás un archivo suelto a mano fuera de Maven.
+
+Estos archivos *no* deben subirse porque:
+- Son generados automáticamente desde cualquier código fuente.
+- Ocupan espacio innecesario.
+- Cada desarrollador los genera localmente al compilar.
+
+Todo lo demás *debe quedarse* en el repositorio:
+- `.mvn/`, `mvnw`, `mvnw.cmd`, `pom.xml`, `src/`
+
+Esto se configura en un archivo `.gitignore` en la raíz del proyecto.
+
 #v(0.5em)
 
 = Sintaxis Básica
