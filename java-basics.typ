@@ -43,7 +43,7 @@
 ]
 
 #let header2 = [
-CreadorSW --- *#smallcaps[v. 1.0]*
+CreadorSW --- *#smallcaps[v. 1.1]*
 ]
 
 #set page(
@@ -105,7 +105,7 @@ wtoj-plataforma-contenidos-CreadorSW-1
 
 - Esa estructura es porque seguimos la convención de Maven.
 - Cada clase en Java va en un archivo `.java` que se escribe con mayúscula.
-- El `Main.java` viene con el repo porque se necesita como punto de entrada (esto se explica en la sección correspondiente).
+- El `Main.java` viene con el repo como punto de entrada de ejemplo, pero no es obligatorio para Maven. Esto se explica en detalle en la sección correspondiente.
 - `mvnw` y `mvnw.cmd`: Scripts que permiten usar Maven sin instalarlo globalmente. El primero es para Linux/Mac, el segundo para Windows.
 - `pom.xml`: Archivo de configuración de Maven que define las dependencias y cómo compilar el proyecto.
 
@@ -670,16 +670,72 @@ Si no es realmente un override (por ejemplo, si el método padre tiene otra firm
 
 = Main - Punto de Entrada
 
-Todo programa Java necesita un método `main` como punto de entrada. Sin él, Java no sabe qué ejecutar primero.
+Todo programa Java necesita un método `main` como punto de entrada. La JVM busca específicamente `public static void main(String[] args)` para saber dónde empezar.
+
+== ¿Por qué tiene que ser exactamente ese método?
+
+La firma debe ser literalmente `public static void main(String[] args)` porque es el contrato que la JVM espera:
+
+- `public`: la JVM necesita poder acceder al método desde fuera de la clase.
+- `static`: se ejecuta sin necesidad de crear una instancia de la clase.
+- `void`: no devuelve nada a la JVM.
+- `main`: es el nombre exacto que la JVM busca.
+- `String[] args`: recibe los argumentos que se pasan por línea de comandos.
+
+Si cambiamos algo (por ejemplo, `public static void start(String[] args)`), la JVM no lo reconoce y tira error.
+
+== ¿Cualquier clase puede tener el main?
+
+Sí, pero no literalmente cualquier clase: tiene que ser una clase que contenga el método exacto `public static void main(String[] args)`. El nombre de la clase puede ser cualquiera (`Main.java`, `App.java`, `Launcher.java`, etc.). Maven y Java no obligan a que se llame `Main`, ese nombre es solo una convención.
+
+Poner el `main` en una clase de dominio (como `Contenido.java` o `Plataforma.java`) funciona, pero no es una buena práctica porque mezcla la infraestructura (punto de entrada) con la lógica de negocio. Es mejor mantenerlo en una clase separada.
+
+== ¿Por qué existe Main.java al principio?
+
+El `Main.java` que viene en el repositorio inicial es una decisión de los docentes, no un requisito de Maven. Maven compila el proyecto y genera la estructura de directorios basándose únicamente en el archivo `pom.xml` y en la convención de directorios (`src/main/java`, `src/test/java`, etc.). No necesita un archivo `Main.java` para funcionar.
+
+== ¿Cuándo se puede eliminar?
+
+Si nuestro proyecto solo contiene clases de dominio y tests con JUnit, podemos eliminar el `Main.java` sin problemas. La ejecución de los tests se realiza mediante `mvn test` a través del plugin Surefire, que no requiere un método `main`.
+
+Es importante entender que al eliminar el `Main.java`, nuestro proyecto como programa ejecutable no está haciendo nada. Los tests verifican que las clases de dominio funcionen correctamente, pero no ejecutan el sistema: instancian objetos, les mandan mensajes y comprueban resultados, pero no ponen en marcha una aplicación. Si queremos que nuestro proyecto haga algo como programa (por ejemplo, mostrar información en consola o iniciar una interfaz), necesitamos un `main` que cree objetos y coordine el comportamiento. Solo necesitamos un `main` si vamos a ejecutar nuestro programa como una aplicación standalone (por ejemplo, con `java -jar` o `mvn exec:java`).
+
+== Ejemplo de main que hace algo
+
+El main nunca debe tener toda la lógica. Solo crea objetos y delega.
 
 #codly(languages: codly-languages)
 ```java
-public static void main(String[] args) {
-    // Acá empieza todo
+package ar.edu.unahur.obj2.w2j;
+
+import ar.edu.unahur.obj2.w2j.contenidos.Pelicula;
+import ar.edu.unahur.obj2.w2j.planes.PlanBasico;
+import ar.edu.unahur.obj2.w2j.planes.Usuario;
+
+public class Main {
+    public static void main(String[] args) {
+        // Crear contenidos
+        Pelicula pelicula1 = new Pelicula("Recuerdos", 20.0);
+        Pelicula pelicula2 = new Pelicula("Avatar", 30.0);
+
+        // Crear un usuario con plan básico
+        PlanBasico plan = new PlanBasico(100.0);
+        Usuario usuario = new Usuario("Juan", plan);
+
+        // El usuario mira contenidos
+        usuario.verContenido(pelicula1);
+        usuario.verContenido(pelicula2);
+
+        // Mostrar resultados
+        System.out.println("Usuario: " + usuario.getNombre());
+        System.out.println("Costo total del plan: " + usuario.getPlan().getCosto());
+    }
 }
 ```
 
-== Main vacío - No hace nada
+== ¿Qué pasa si el main está vacío?
+
+El programa compila y corre, pero no hace nada visible. Las clases de dominio existen en el código, pero si nadie las instancia dentro del `main`, simplemente "están ahí".
 
 #codly(languages: codly-languages)
 ```java
@@ -688,120 +744,9 @@ public static void main(String[] args) {
 }
 ```
 
-El programa compila, corre, pero no pasa nada visible.
+== ¿Qué pasa si no tenemos main?
 
-== Main que crea un Contenido y usa un método
-
-#codly(languages: codly-languages)
-```java
-public static void main(String[] args) {
-    Contenido pelicula = new Contenido("Recuerdos", 20);
-    System.out.println(pelicula.costo());  // imprime 20
-}
-```
-
-Resultado: `20`
-
-== Main que crea Contenido y Pelicula
-
-#codly(languages: codly-languages)
-```java
-public static void main(String[] args) {
-    Contenido pelicula = new Contenido("Recuerdos", 20);
-    Contenido otraPelicula = new Pelicula("Avatar", 30);
-
-    System.out.println(pelicula.costo());       // 20
-    System.out.println(otraPelicula.costo());    // 30
-}
-```
-
-== Main que delega a otro método
-
-El main nunca tiene toda la lógica. Solo crea objetos y delega.
-
-#codly(languages: codly-languages)
-```java
-public static void main(String[] args) {
-    Plataforma plataforma = new Plataforma();
-    plataforma.iniciar();  // toda la lógica está en iniciar(), no acá
-}
-```
-
-== ¿Cuánto código debe tener el main?
-
-*Mínimo posible.* Solo crea objetos y delega. No pongas toda la lógica en el main.
-
-*Mal:*
-#codly(languages: codly-languages)
-```java
-public static void main(String[] args) {
-    // 200 líneas de código todo mezclado
-    // crear objetos
-    // llamar métodos
-    // hacer cálculos
-    // imprimir resultados
-}
-```
-
-*Bien:*
-#codly(languages: codly-languages)
-```java
-public static void main(String[] args) {
-    Plataforma plataforma = new Plataforma();
-    plataforma.iniciar();
-}
-```
-
-== Si tenés muchas acciones (como 50 tests)
-
-Tenés tres opciones:
-
-*Opción 1: Framework de testing (JUnit)*
-No ponés nada en el main. Los tests son clases separadas con `@Test`. El framework los ejecuta.
-
-*Opción 2: Clase Ejecutor separada*
-
-#codly(languages: codly-languages)
-```java
-// Main.java
-public class Main {
-    public static void main(String[] args) {
-        Ejecutor.ejecutarTodo();
-    }
-}
-
-// Ejecutor.java
-public class Ejecutor {
-    public static void ejecutarTodo() {
-        Contenido pelicula = new Contenido("Recuerdos", 20);
-        System.out.println(pelicula.costo());
-    }
-}
-```
-
-*Opción 3: Métodos estáticos llamados desde main*
-#codly(languages: codly-languages)
-```java
-public static void main(String[] args) {
-    testCostoPelicula();
-    testCostoSerie();
-}
-
-public static void testCostoPelicula() {
-    Contenido pelicula = new Contenido("Recuerdos", 20);
-    System.out.println(pelicula.costo());
-}
-
-public static void testCostoSerie() {
-    // ...
-}
-```
-
-== ¿Por qué existe el main?
-
-Java no tiene un REPL como Wollok. Necesita saber *exactamente* dónde empieza. Sin `main`, no hay punto de partida.
-
-== ¿Qué pasa si no tengo main?
+Si intentamos ejecutar el programa con `java` o `mvn exec:java` pero ninguna clase tiene el método `main`, obtenemos:
 
 ```
 Error: Main method not found in class Contenido, please define the main method as:
@@ -929,3 +874,48 @@ Contenido c = new Contenido();  // ERROR: no default constructor exists
 ```
 
 Si definiste un constructor con parámetros y necesitás el sin parámetros, debés escribirlo vos.
+
+= Reporte de Cobertura con JaCoCo y Servidor Local
+
+== ¿Qué es JaCoCo?
+
+JaCoCo es una herramienta que genera reportes de cobertura de código, es decir, indica qué partes de nuestro código fueron ejecutadas por los tests y cuáles no. El reporte se genera como una página HTML dentro de la carpeta `target/site/jacoco/`.
+
+== El problema al abrir el reporte directamente
+
+Al abrir el archivo `index.html` del reporte haciendo doble clic, el navegador lo carga con el protocolo `file://`. Algunos navegadores (como Chromium o Ungoogled Chromium) bloquean la carga de recursos locales (CSS y JavaScript) por políticas de seguridad. Esto hace que el reporte se vea incompleto o sin estilos. Firefox, en cambio, suele permitirlo.
+
+== La solución: Servidor local con Jetty
+
+Para evitar este problema, podemos levantar un servidor web local que sirva el reporte mediante el protocolo `http://`. Esto se logra agregando el plugin de Jetty al archivo `pom.xml`:
+
+```xml
+<plugin>
+    <groupId>org.eclipse.jetty</groupId>
+    <artifactId>jetty-maven-plugin</artifactId>
+    <version>11.0.16</version>
+    <configuration>
+        <supportedPackagings>
+            <supportedPackaging>jar</supportedPackaging>
+        </supportedPackagings>
+        <webApp>
+            <resourceBase>${project.build.directory}/site/jacoco</resourceBase>
+        </webApp>
+        <httpConnector>
+            <port>8080</port>
+        </httpConnector>
+    </configuration>
+</plugin>
+```
+
+== Cómo usarlo
+
+Una vez que el reporte de JaCoCo fue generado (con `mvn test`), ejecutamos:
+
+```bash
+mvn jetty:run
+```
+
+Esto levanta un servidor local en `http://localhost:8080`. Al abrir esa dirección en cualquier navegador, el reporte se visualiza correctamente con todos sus estilos y funcionalidades.
+
+La primera vez que se ejecuta, Maven descarga el plugin de Jetty y sus dependencias. Esto sucede una sola vez y se almacena en el repositorio local (`~/.m2/repository`). Las siguientes ejecuciones son instantáneas, incluso sin conexión a internet.
