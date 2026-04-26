@@ -124,10 +124,10 @@ Java utiliza herramientas como *Maven* para gestionar las librerías externas. L
 
 = Ignorando archivos de compilación (.gitignore)
 
-Cuando subís el proyecto a Git, *no* deben incluirse los archivos generados automáticamente:
+Cuando subimos el proyecto a Git, *no* deben incluirse los archivos generados automáticamente:
 
 - `target/`: Directorio donde Maven guarda los `.class` compilados y los resultados de los tests. Puede ocupar varios megabytes.
-- `*.class`: Archivos de bytecode Java, por si compilás un archivo suelto a mano fuera de Maven.
+- `*.class`: Archivos de bytecode Java, por si compilamos un archivo suelto a mano fuera de Maven.
 
 Estos archivos *no* deben subirse porque:
 - Son generados automáticamente desde cualquier código fuente.
@@ -172,7 +172,7 @@ class Contenido {
 }
 ```
 
-*¿Qué pasa si no usás las llaves?*
+*¿Qué pasa si no usamos las llaves?*
 
 *Java:*
 #codly(languages: codly-languages)
@@ -203,7 +203,7 @@ var x = 5
 x = x + 1
 ```
 
-*¿Qué pasa si no ponés `;`?*
+*¿Qué pasa si no ponemos `;`?*
 
 *Java:*
 #codly(languages: codly-languages)
@@ -220,7 +220,7 @@ El compilador informa exactamente dónde falta el `;`.
 
 == Java es fuertemente tipado
 
-En Java *siempre* debés indicar el tipo de la variable. No podés dejar que el compilador lo infiera.
+En Java *siempre* debemos indicar el tipo de la variable. No podemos dejar que el compilador lo infiera.
 
 *Java:*
 #codly(languages: codly-languages)
@@ -240,7 +240,7 @@ var esPopular = true
 var promedio = 22.5
 ```
 
-*¿Qué pasa si usás un tipo incorrecto?*
+*¿Qué pasa si usamos un tipo incorrecto?*
 
 *Java:*
 #codly(languages: codly-languages)
@@ -266,7 +266,7 @@ const titulo = "Recuerdos"   // inmutable
 var costoBase = 20            // mutable
 ```
 
-*¿Qué pasa si intentás modificar una variable `final`?*
+*¿Qué pasa si intentamos modificar una variable `final`?*
 
 *Java:*
 #codly(languages: codly-languages)
@@ -312,7 +312,7 @@ class Contenido {
 
 En Wollok no existe encapsulamiento: cualquiera puede ver y modificar cualquier atributo.
 
-== ¿Qué pasa si no ponés modificador?
+== ¿Qué pasa si no ponemos modificador?
 
 *Java:*
 #codly(languages: codly-languages)
@@ -384,7 +384,7 @@ class Pelicula inherits Contenido {
 }
 ```
 
-*¿Qué pasa si heredás de una clase que no existe?*
+*¿Qué pasa si heredamos de una clase que no existe?*
 
 *Java:*
 #codly(languages: codly-languages)
@@ -415,7 +415,7 @@ class Contenido {
 }
 ```
 
-*¿Qué pasa si no implementás el método abstracto?*
+*¿Qué pasa si no implementamos el método abstracto?*
 
 *Java:*
 #codly(languages: codly-languages)
@@ -454,7 +454,7 @@ class Pelicula inherits Contenido {
 
 == `return` es obligatorio
 
-Si declarás un método que devuelve algo, *debes* retornar un valor.
+Si declaramos un método que devuelve algo, *debemos* retornar un valor.
 
 *Java:*
 #codly(languages: codly-languages)
@@ -470,7 +470,7 @@ public int costo() {
 method costo() = costoBase
 ```
 
-*¿Qué pasa si no ponés `return`?*
+*¿Qué pasa si no ponemos `return`?*
 
 *Java:*
 #codly(languages: codly-languages)
@@ -500,7 +500,7 @@ method agregarTemporada(unaTemporada) {
 }
 ```
 
-*¿Qué pasa si intentás usar `return` en un método `void`?*
+*¿Qué pasa si intentamos usar `return` en un método `void`?*
 
 *Java:*
 #codly(languages: codly-languages)
@@ -635,7 +635,7 @@ const duracion = []
 
 = Override
 
-En Java es *obligatorio* usar la anotación `@Override` cuando sobrescribís un método de la clase padre.
+En Java es *obligatorio* usar la anotación `@Override` cuando sobrescribimos un método de la clase padre.
 
 *Java:*
 #codly(languages: codly-languages)
@@ -654,7 +654,7 @@ override method costo() {
 }
 ```
 
-*¿Qué pasa si te olvidás `@Override`?*
+*¿Qué pasa si nos olvidamos de `@Override`?*
 
 *Java:*
 #codly(languages: codly-languages)
@@ -664,7 +664,7 @@ public int costo() {  // se supone que es override pero sin anotación
 }
 ```
 
-Si no es realmente un override (por ejemplo, si el método padre tiene otra firma), Java *no te avisa*. Podés tener un método completamente nuevo sin querer y el compilador no dice nada.
+Si no es realmente un override (por ejemplo, si el método padre tiene otra firma), Java *no nos avisa*. Podemos tener un método completamente nuevo sin querer y el compilador no dice nada.
 
 #v(0.5em)
 
@@ -757,7 +757,7 @@ public static void main(String[] args)
 
 = Constructores
 
-En Java, si necesitás inicializar objetos con parámetros, debés escribir el constructor explícitamente. Wollok lo hace automáticamente, Java no.
+En Java, si necesitamos inicializar objetos con parámetros, debemos escribir el constructor explícitamente. Wollok lo hace automáticamente, Java no.
 
 == Constructor en Java vs Wollok
 
@@ -797,7 +797,7 @@ public Contenido(String titulo, double costoBase) {
 }
 ```
 
-== ¿Qué pasa si no escribís constructor?
+== ¿Qué pasa si no escribimos constructor?
 
 #codly(languages: codly-languages)
 ```java
@@ -808,7 +808,7 @@ public class Contenido {
 // Java crea automáticamente: Contenido() {}
 ```
 
-Si no definís ningún constructor, Java crea uno automático sin parámetros. Pero si definís *al menos uno con parámetros*, el automático desaparece.
+Si no definimos ningún constructor, Java crea uno automático sin parámetros. Pero si definimos *al menos uno con parámetros*, el automático desaparece.
 
 == Constructor en clase abstracta
 
@@ -866,14 +866,14 @@ Si `costoBase` fuera `private`, `Pelicula` (que hereda de `Contenido`) no podrí
 
 *Wollok:* No existe este concepto. Todos los atributos son accesibles.
 
-== ¿Qué pasa si no escribís constructor y lo necesitás?
+== ¿Qué pasa si no escribimos constructor y lo necesitamos?
 
 #codly(languages: codly-languages)
 ```java
 Contenido c = new Contenido();  // ERROR: no default constructor exists
 ```
 
-Si definiste un constructor con parámetros y necesitás el sin parámetros, debés escribirlo vos.
+Si definimos un constructor con parámetros y necesitamos el sin parámetros, debemos escribirlo nosotros.
 
 = Reporte de Cobertura con JaCoCo y Servidor Local
 
