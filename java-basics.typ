@@ -43,7 +43,7 @@
 ]
 
 #let header2 = [
-CreadorSW --- *#smallcaps[v. 1.1]*
+CreadorSW --- *#smallcaps[v. 1.2]*
 ]
 
 #set page(
@@ -138,6 +138,34 @@ Todo lo demás *debe quedarse* en el repositorio:
 - `.mvn/`, `mvnw`, `mvnw.cmd`, `pom.xml`, `src/`
 
 Esto se configura en un archivo `.gitignore` en la raíz del proyecto.
+
+#v(0.5em)
+
+== Crear un nuevo proyecto desde cero
+
+Para no tener que crear la estructura de directorios a mano, Maven tiene un *archetype* que la genera automáticamente:
+#codly(zebra-fill: none)
+#codly(languages: codly-languages)
+```bash
+mvn archetype:generate \
+  -DgroupId=ar.edu.unahur.obj2 \
+  -DartifactId=nombre-del-proyecto \
+  -DarchetypeArtifactId=maven-archetype-quickstart \
+  -DinteractiveMode=false
+```
+
+Esto crea:
+
+#codly(languages: codly-languages)
+```
+nombre-del-proyecto/
+├── pom.xml
+└── src/
+    ├── main/java/ar/edu/unahur/obj2/App.java
+    └── test/java/ar/edu/unahur/obj2/AppTest.java
+```
+
+Después solo hay que ajustar el `pom.xml` a la versión de Java y las dependencias que se necesiten (JUnit 5, JaCoCo, etc.).
 
 #v(0.5em)
 
